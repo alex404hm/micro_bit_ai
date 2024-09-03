@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro:bit Code Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basis styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #007acc;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #252526;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu a {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #d4d4d4;
+            background-color: #333;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .menu a:hover, .menu a.active {
+            background-color: #007acc;
+            transform: scale(1.05);
+        }
+
+        .content {
+            display: none;
+            background-color: #1e1e1e;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .code-editor-container {
+            height: 500px;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #monaco-editor {
+            height: 100%;
+        }
+
+        .simulation-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 400px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .simulation {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .editor-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+        }
+
+        .editor-buttons button {
+            padding: 12px 24px;
+            border-radius: 5px;
+            background-color: #007acc;
+            color: white;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .editor-buttons button:hover {
+            background-color: #005a9e;
+            transform: scale(1.05);
+        }
+
+        .input-label {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .input-field {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #252526;
+            color: #d4d4d4;
+            border: 1px solid #007acc;
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            border-radius: 5px;
+            background-color: #007acc;
+            color: white;
+            font-weight: 500;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            margin: 10px 0;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background-color: #005a9e;
+            transform: scale(1.05);
+        }
+
+        input[type="checkbox"] {
+            accent-color: #007acc;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #252526;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            color: #d4d4d4;
+        }
+
+        .projects, .tutorials, .settings, .analysis, .collaboration, .block-editor, .project-ideas, .code-generator, .shared-codes {
+            display: none;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .language-selector select {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #007acc;
+            color: white;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Micro:bit Code Studio</h1>
+    </header>
+    
+    <nav class="menu">
+        <a href="#code-editor" class="menu-item active" data-target="code-editor">Code</a>
+        <a href="#simulation" class="menu-item" data-target="simulation">Sim</a>
+        <a href="#projects" class="menu-item" data-target="projects">Proj</a>
+        <a href="#tutorials" class="menu-item" data-target="tutorials">Tut</a>
+        <a href="#settings" class="menu-item" data-target="settings">Set</a>
+        <a href="#analysis" class="menu-item" data-target="analysis">Analys</a>
+        <a href="#collaboration" class="menu-item" data-target="collaboration">Collab</a>
+        <a href="#block-editor" class="menu-item" data-target="block-editor">Blocks</a>
+        <a href="#project-ideas" class="menu-item" data-target="project-ideas">Ideas</a>
+        <a href="#code-generator" class="menu-item" data-target="code-generator">Gen</a>
+        <a href="#shared-codes" class="menu-item" data-target="shared-codes">Shared</a>
+    </nav>
+
+    <div id="code-editor" class="content active">
+        <div class="code-editor-container">
+            <div class="language-selector">
+                <select id="languageSelector">
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                </select>
+            </div>
+            <div id="monaco-editor"></div>
+        </div>
+    </div>
+
+    <div id="simulation" class="content">
+        <div class="simulation-container">
+            <iframe id="microbit-simulator" src="https://makecode.microbit.org/--run?embed=1#pub:_LRp73cWi
